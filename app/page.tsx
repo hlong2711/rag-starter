@@ -32,11 +32,11 @@ export default function Chat() {
                         <pre className="my-4 bg-zinc-100 p-2 rounded-sm">
                           {JSON.stringify(part.input, null, 2)}
                         </pre>
-                        <pre className="my-4 bg-zinc-100 p-2 rounded-sm">
-                          {JSON.stringify(part.output)}
+                        <pre className="my-4 bg-zinc-100 p-2 rounded-sm text-sm">
+                          {JSON.stringify(part.output, null, 2)}
                         </pre>
                       </p>
-                    );
+                    ); 
                 }
               })}
             </div>

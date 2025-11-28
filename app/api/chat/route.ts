@@ -9,6 +9,7 @@ import {
 import { google } from "@ai-sdk/google";
 import z from "zod";
 import { createResource } from "@/lib/actions/resources";
+import { findSimilarContent } from "@/lib/ai/embedding";
 
 export const maxDuration = 30; //seconds
 
@@ -17,10 +18,10 @@ export async function POST(req: Request) {
 
   const result = streamText({
     // model: "openai/gpt-4o", //ai gateway model
-    model: google("gemini-2.5-flash-lite"),
-    system: `You are a helpful assistant. Only respond to questions using information from tool calls. if no relevant information is found in the tool calls, respond, "Sorry, I don't know."`,
+    model: google("gemini-2.5-pro"),
+    system: `You are a helpful assistant. Only respond to questions using information from tool calls. if no relevant information is found in the tool calls, respond, "Sorry, I don't know.". If the tool return multiple pieces of information, synthesize them into a concise answer.`,
     messages: convertToModelMessages(messages),
-    stopWhen: stepCountIs(2),
+    stopWhen: stepCountIs(5),
     tools: {
       addResource: tool({
         description: `add a resource to your knowledge base.
@@ -35,6 +36,16 @@ export async function POST(req: Request) {
             ),
         }),
         execute: async ({ content }) => createResource({ content }),
+      }),
+
+      getInformation: tool({
+        description: `get information from your knowledge base to answer user questions. After using this tool, use the information retrieved to answer the user's question.`,
+        inputSchema: z.object({
+          query: z
+            .string()
+            .describe("The user's question or query to search for."),
+        }),
+        execute: async ({ query }) => findSimilarContent(query),
       }),
     },
   });
