@@ -1,11 +1,16 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Chat() {
   const [input, setInput] = useState("");
   const { messages, sendMessage } = useChat();
+
+  useEffect(() => {
+    console.log(`=>>>> chat messages: `, messages);
+  }, [messages]);
+
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       <div className="space-y-4">
@@ -26,6 +31,9 @@ export default function Chat() {
                         tool: {part.type}
                         <pre className="my-4 bg-zinc-100 p-2 rounded-sm">
                           {JSON.stringify(part.input, null, 2)}
+                        </pre>
+                        <pre className="my-4 bg-zinc-100 p-2 rounded-sm">
+                          {JSON.stringify(part.output)}
                         </pre>
                       </p>
                     );

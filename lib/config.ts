@@ -1,0 +1,1 @@
+export const DB_VECTOR_DIMENSIONALITY = 1536;
