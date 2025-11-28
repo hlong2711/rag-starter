@@ -1,4 +1,10 @@
-import { convertToModelMessages, streamText, tool, UIMessage } from "ai";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  tool,
+  UIMessage,
+} from "ai";
 
 import { google } from "@ai-sdk/google";
 import z from "zod";
@@ -14,6 +20,7 @@ export async function POST(req: Request) {
     model: google("gemini-2.5-flash-lite"),
     system: `You are a helpful assistant. Only respond to questions using information from tool calls. if no relevant information is found in the tool calls, respond, "Sorry, I don't know."`,
     messages: convertToModelMessages(messages),
+    stopWhen: stepCountIs(2),
     tools: {
       addResource: tool({
         description: `add a resource to your knowledge base.
