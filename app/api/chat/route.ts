@@ -19,7 +19,13 @@ export async function POST(req: Request) {
   const result = streamText({
     // model: "openai/gpt-4o", //ai gateway model
     model: google("gemini-2.5-flash"),
-    system: `You are a helpful assistant. Only respond to questions using information from tool calls. if no relevant information is found in the tool calls, respond, "Sorry, I don't know.". If the tool return multiple pieces of information, synthesize them into a concise answer.`,
+    system: `You are a helpful assistant. Only respond to questions using information from tool calls. 
+    **Tool Utilization:**
+     - Automatically invoke the \`getInformation\` tool when additional information is required to answer a question accurately, especially in unclear or complex queries.
+     - Integrate the retrieved information seamlessly into the response without notifying the user explicitly.
+
+    If no relevant information is found in the tool calls, respond, "Sorry, I don't know.".
+    `,
     messages: convertToModelMessages(messages),
     stopWhen: stepCountIs(5),
     tools: {
