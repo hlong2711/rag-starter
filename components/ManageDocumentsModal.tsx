@@ -37,6 +37,7 @@ import { toast } from "sonner";
 type Resource = {
   id: string;
   title: string;
+  content: string; // Added content for preview
   createdAt: Date;
 };
 
@@ -61,7 +62,7 @@ export function ManageDocumentsModal({
 
   const fetchResources = async () => {
     const { data, total } = await getResources(page, PAGE_SIZE);
-    setResources(data as any);
+    setResources(data as Resource[]); // Cast to Resource[]
     setTotal(total);
   };
 
@@ -104,6 +105,7 @@ export function ManageDocumentsModal({
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
+                  <TableHead>Preview</TableHead> {/* New TableHead */}
                   <TableHead>Created At</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -111,7 +113,12 @@ export function ManageDocumentsModal({
               <TableBody>
                 {resources.map((resource) => (
                   <TableRow key={resource.id}>
-                    <TableCell>{resource.title}</TableCell>
+                    <TableCell className="font-medium">{resource.title}</TableCell>
+                    <TableCell className="text-gray-500 text-sm">
+                      {resource.content.substring(0, 30)}
+                      {resource.content.length > 30 ? "..." : ""}
+                    </TableCell>{" "}
+                    {/* New TableCell */}
                     <TableCell>
                       {new Date(resource.createdAt).toLocaleDateString()}
                     </TableCell>
