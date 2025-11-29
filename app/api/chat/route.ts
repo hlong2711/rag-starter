@@ -27,6 +27,12 @@ export async function POST(req: Request) {
         description: `add a resource to your knowledge base.
           If the user provides a random piece of knowledge unprompted, use this tool without asking for confirmation.`,
         inputSchema: z.object({
+          title: z
+            .string()
+            .max(255)
+            .describe(
+              "The title of the resource. If not provided, it will default to 'Untitled Resource'."
+            ),
           content: z
             .string()
             .min(1)
@@ -35,7 +41,8 @@ export async function POST(req: Request) {
               "The content of the resource to add to the knowledge base."
             ),
         }),
-        execute: async ({ content }) => createResource({ content }),
+        execute: async ({ title, content }) =>
+          createResource({ title, content }),
       }),
 
       getInformation: tool({
