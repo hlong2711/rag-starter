@@ -56,7 +56,9 @@ export async function POST(req: Request) {
         inputSchema: z.object({
           query: z
             .string()
-            .describe("The user's question or query to search for."),
+            .describe(
+              "The user's question or query to search for. If user ask in non-English, translate it to English first (to improve search quality), then search."
+            ),
         }),
         execute: async ({ query }) => findSimilarContent(query),
       }),
