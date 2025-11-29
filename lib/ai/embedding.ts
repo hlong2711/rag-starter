@@ -9,7 +9,8 @@ const generateChunk = (input: string) => {
   return input
     .trim()
     .split(".")
-    .filter((i) => i !== "");
+    .filter((i) => i !== "")
+    .map((i) => i.trim());
 };
 
 // const embeddingModel = "openai/text-embedding-ada-002";
