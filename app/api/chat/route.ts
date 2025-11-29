@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     // model: "openai/gpt-4o", //ai gateway model
-    model: google("gemini-2.5-pro"),
+    model: google("gemini-2.5-flash"),
     system: `You are a helpful assistant. Only respond to questions using information from tool calls. if no relevant information is found in the tool calls, respond, "Sorry, I don't know.". If the tool return multiple pieces of information, synthesize them into a concise answer.`,
     messages: convertToModelMessages(messages),
     stopWhen: stepCountIs(5),
