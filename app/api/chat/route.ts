@@ -6,21 +6,21 @@ import {
   UIMessage,
 } from "ai";
 
-// import { google } from "@ai-sdk/google";
-import { ollama } from "ollama-ai-provider-v2"; // Import Ollama
 import z from "zod";
 import { createResource } from "@/lib/actions/resources";
 import { findSimilarContent } from "@/lib/ai/embedding";
+import { createModel } from "@/lib/ai/models";
+import { env } from "@/lib/env.mjs";
 
 export const maxDuration = 30; //seconds
 
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
+  const model = createModel(env.LLM_PROVIDER, env.LLM_MODEL_ID);
+
   const result = streamText({
-    // model: "openai/gpt-4o", //ai gateway model
-    // model: google("gemini-2.5-flash"), // Original Google model
-    model: ollama("llama3.2:3b"), // Changed to Ollama
+    model: model,
     system: `You are a helpful assistant. Only respond to questions using information from tool calls. 
     **Tool Utilization:**
      - Automatically invoke the \`getInformation\` tool when additional information is required to answer a question accurately, especially in unclear or complex queries.
