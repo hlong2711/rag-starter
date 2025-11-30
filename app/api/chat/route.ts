@@ -6,7 +6,8 @@ import {
   UIMessage,
 } from "ai";
 
-import { google } from "@ai-sdk/google";
+// import { google } from "@ai-sdk/google";
+import { ollama } from "ollama-ai-provider-v2"; // Import Ollama
 import z from "zod";
 import { createResource } from "@/lib/actions/resources";
 import { findSimilarContent } from "@/lib/ai/embedding";
@@ -18,7 +19,8 @@ export async function POST(req: Request) {
 
   const result = streamText({
     // model: "openai/gpt-4o", //ai gateway model
-    model: google("gemini-2.5-flash"),
+    // model: google("gemini-2.5-flash"), // Original Google model
+    model: ollama("llama3.2:3b"), // Changed to Ollama
     system: `You are a helpful assistant. Only respond to questions using information from tool calls. 
     **Tool Utilization:**
      - Automatically invoke the \`getInformation\` tool when additional information is required to answer a question accurately, especially in unclear or complex queries.
