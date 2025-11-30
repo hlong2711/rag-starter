@@ -2,7 +2,13 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
-import { SendHorizonal, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  SendHorizonal,
+  ChevronDown,
+  ChevronUp,
+  TriangleAlert,
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Chat() {
   const [input, setInput] = useState("");
@@ -10,6 +16,23 @@ export default function Chat() {
   const [expandedTools, setExpandedTools] = useState<{ [key: string]: boolean }>(
     {},
   );
+  const [warning, setWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkModelCapability = async () => {
+      try {
+        const response = await fetch("/api/check-model");
+        const data = await response.json();
+        if (!data.isCapable) {
+          setWarning(data.message);
+        }
+      } catch (error) {
+        console.error("Failed to check model capability:", error);
+      }
+    };
+
+    checkModelCapability();
+  }, []);
 
   const toggleTool = (id: string) => {
     setExpandedTools((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -21,6 +44,12 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col w-full h-screen bg-gray-50 antialiased">
+      {warning && (
+        <Alert variant="destructive" className="rounded-none">
+          <TriangleAlert className="h-4 w-4" />
+          <AlertDescription>{warning}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           {messages.map((m) => (
