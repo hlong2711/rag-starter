@@ -4,6 +4,7 @@ import { DB_VECTOR_DIMENSIONALITY } from "../config";
 import { cosineDistance, desc, gt, sql } from "drizzle-orm";
 import { embeddings } from "../db/schema/embeddings";
 import { db } from "../db";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 const generateChunk = (input: string) => {
   return input
@@ -13,12 +14,21 @@ const generateChunk = (input: string) => {
     .map((i) => i.trim());
 };
 
+const textSplitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 500,
+  chunkOverlap: 50,
+});
+
+const generateSplitText = (input: string) => {
+  return textSplitter.splitText(input);
+};
+
 // const embeddingModel = "openai/text-embedding-ada-002";
 
 const embeddingModel = google.textEmbedding("gemini-embedding-001");
 
 export const generateEmbeddings = async (texts: string) => {
-  const chunks = generateChunk(texts);
+  const chunks = await generateSplitText(texts);
 
   const { embeddings } = await embedMany({
     model: embeddingModel,
