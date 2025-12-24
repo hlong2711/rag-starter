@@ -27,26 +27,50 @@ export function FileUploadForm() {
     setIsSubmitting(true);
     setMessage("");
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const content = event.target?.result as string;
-      const title = file.name.replace(/\.md$/, "");
-      const result = await createResource({ title, content });
+    try {
+      if (file.type === "application/pdf") {
+        // Upload PDF to server, which will use loadFileFromPath
+        const formData = new FormData();
+        formData.append("file", file);
 
-      if (result) {
-        setMessage(result);
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Upload failed");
+        }
+
+        setMessage(result.message);
+      } else {
+        // Handle markdown files client-side
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const title = file.name.replace(/\.md$/, "");
+          const content = event.target?.result as string;
+          console.log({ title, content });
+          const result = await createResource({ title, content });
+
+          if (result) {
+            setMessage(result);
+          }
+        };
+
+        reader.onerror = () => {
+          throw new Error("Failed to read file.");
+        };
+
+        reader.readAsText(file);
       }
-
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "An error occurred");
+    } finally {
       setFile(null);
       setIsSubmitting(false);
-    };
-
-    reader.onerror = () => {
-      setMessage("Failed to read file.");
-      setIsSubmitting(false);
-    };
-
-    reader.readAsText(file);
+    }
   };
 
   return (
@@ -56,7 +80,7 @@ export function FileUploadForm() {
         <Input
           id="file"
           type="file"
-          accept=".md"
+          accept=".md,.pdf"
           onChange={handleFileChange}
         />
       </div>
